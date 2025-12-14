@@ -12,7 +12,7 @@ wheels = [
 ]
 
 [[package]]
-name = "project-7-virtualmachine"
+name = "project-11-jackcompiler"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
