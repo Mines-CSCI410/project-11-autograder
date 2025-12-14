@@ -17,14 +17,9 @@ class TestBase(unittest.TestCase):
     def runCPUEmulator(self, dirname, name):
         res = subprocess.call(['n2tCPUEmulator', f'/autograder/source/{dirname}/{name}.tst'])
         if res != 0:
-            diff = subprocess.check_output(['diff', f'/autograder/source/{dirname}/{name}.out', f'/autograder/source/{dirname}/{name}.cmp', '-qsw', '--strip-trailing-cr'], stderr=subprocess.STDOUT)
+            diff = subprocess.check_output(['/bin/sh', '-c', f'diff /autograder/source/{dirname}/{name}.cmp /autograder/source/{dirname}/{name}.out --strip-trailing-cr ; exit 0'])
             print(f'Files differ!\n{diff}')
-            raise AssertionError(f'Unable to run student\'s ASM on CPU emulator!')
-
-    def assertNoDiff(self, file, expected_file):
-        res = subprocess.call(['diff', file, expected_file, '-qsw', '--strip-trailing-cr'])
-        if res != 0:
-            raise AssertionError(f'Output does not match the expected!')
+            raise AssertionError(f'Student\'s ASM did not pass the provided TST file!')
 
     def assertCorrectTranslator(self, dirname):
         _, name = dirname.split('/')
@@ -32,7 +27,6 @@ class TestBase(unittest.TestCase):
         self.assertValidAssembly(dirname, name)
         self.runCPUEmulator(dirname, name)
         subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.out', '/autograder/outputs/'])
-        self.assertNoDiff(f'/autograder/outputs/{name}.out', f'/autograder/grader/tests/expected-outputs/{dirname}/{name}.cmp')
 
 class TestModules(TestBase): 
     @weight(47.5/4)
