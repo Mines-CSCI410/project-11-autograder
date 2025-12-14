@@ -1,4 +1,4 @@
-# Autograder For Project 10 Jack Analyzer
+# Autograder For Project 11 Jack Compiler
 
 ## Submission Requirements
 
@@ -10,7 +10,7 @@ Some languages, such as python, will not need to build anything, but should
 still contain an empty `setup.sh` file.
 
 ### Executable
-The executable should be named `JackAnalyzer`.
+The executable should be named `JackCompiler`.
 
 For interpreted languages, such as python, where your program cannot be built
 into an executable, use a bash script to call their program *passing through

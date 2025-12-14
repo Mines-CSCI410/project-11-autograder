@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXECUTABLE=./JackAnalyzer
+EXECUTABLE=./JackCompiler
 
 pushd /autograder/source/ >/dev/null
 

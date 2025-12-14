@@ -1,13 +1,13 @@
 #!/bin/bash
 
-EXECUTABLE=./JackAnalyzer
+EXECUTABLE=./JackCompiler
 
 cp -r /autograder/submission/* /autograder/source/
 
 pushd /autograder/source/ >/dev/null
 
-# remove any jack or xml files in submission
-rm -f *.jack *.xml
+# remove any jack, vm, or xml files in submission
+rm -f *.jack *.xml *.vm
 
 # run student-submitted setup script (untrusted)
 chmod +x ./setup.sh
