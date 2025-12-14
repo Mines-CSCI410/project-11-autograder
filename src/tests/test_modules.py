@@ -4,19 +4,21 @@ import subprocess
 from gradescope_utils.autograder_utils.decorators import weight, number
 
 class TestBase(unittest.TestCase): 
-    def runStudentCode(self, name):
-        res = subprocess.call(['./run_student_code.sh', name])
+    def runStudentCode(self, dirname, name):
+        res = subprocess.call(['./run_student_code.sh', dirname])
         if res != 0:
             raise AssertionError(f'Unable to run student\'s virtual machine translator on {name}.vm!')
 
-    def assertValidAssembly(self, name):
-        res = subprocess.call(['n2tAssembler', f'/autograder/source/{name}.asm'])
+    def assertValidAssembly(self, dirname, name):
+        res = subprocess.call(['n2tAssembler', f'/autograder/source/{dirname}/{name}.asm'])
         if res != 0:
             raise AssertionError(f'Unable to assemble student\'s ASM output!')
 
-    def runCPUEmulator(self, name):
-        res = subprocess.call(['n2tCPUEmulator', f'/autograder/source/{name}.tst'])
+    def runCPUEmulator(self, dirname, name):
+        res = subprocess.call(['n2tCPUEmulator', f'/autograder/source/{dirname}/{name}.tst'])
         if res != 0:
+            diff = subprocess.check_output(['diff', f'/autograder/source/{dirname}/{name}.out', f'/autograder/source/{dirname}/{name}.cmp', '-qsw', '--strip-trailing-cr'])
+            print(f'Files differ!\n{diff}')
             raise AssertionError(f'Unable to run student\'s ASM on CPU emulator!')
 
     def assertNoDiff(self, file, expected_file):
@@ -24,35 +26,41 @@ class TestBase(unittest.TestCase):
         if res != 0:
             raise AssertionError(f'Output does not match the expected!')
 
-    def assertCorrectTranslator(self, name):
-        self.runStudentCode(name)
-        self.assertValidAssembly(name)
-        self.runCPUEmulator(name)
-        subprocess.run(['mv', f'/autograder/source/{name}.out', '/autograder/outputs/'])
-        self.assertNoDiff(f'/autograder/outputs/{name}.out', f'/autograder/grader/tests/expected-outputs/{name}.cmp')
+    def assertCorrectTranslator(self, dirname):
+        _, name = dirname.split('/')
+        self.runStudentCode(dirname, name)
+        self.assertValidAssembly(dirname, name)
+        self.runCPUEmulator(dirname, name)
+        subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.out', '/autograder/outputs/'])
+        self.assertNoDiff(f'/autograder/outputs/{name}.out', f'/autograder/grader/tests/expected-outputs/{dirname}/{name}.cmp')
 
 class TestModules(TestBase): 
-    @weight(95/5)
+    @weight(47.5/4)
     @number(1)
-    def test_basic(self):
-        self.assertCorrectTranslator('BasicTest')
+    def test_fibonacci_element(self):
+        self.assertCorrectTranslator('FunctionCalls/FibonacciElement')
 
-    @weight(95/5)
+    @weight(47.5/4)
     @number(2)
-    def test_pointer(self):
-        self.assertCorrectTranslator('PointerTest')
+    def test_nested_call(self):
+        self.assertCorrectTranslator('FunctionCalls/NestedCall')
 
-    @weight(95/5)
+    @weight(47.5/4)
     @number(3)
-    def test_stack(self):
-        self.assertCorrectTranslator('StackTest')
+    def test_simple_function(self):
+        self.assertCorrectTranslator('FunctionCalls/SimpleFunction')
 
-    @weight(95/5)
+    @weight(47.5/4)
     @number(4)
-    def test_static(self):
-        self.assertCorrectTranslator('StaticTest')
+    def test_statics_test(self):
+        self.assertCorrectTranslator('FunctionCalls/StaticsTest')
 
-    @weight(95/5)
+    @weight(47.5/2)
     @number(5)
-    def test_simple_add(self):
-        self.assertCorrectTranslator('SimpleAdd')
+    def test_basic_loop(self):
+        self.assertCorrectTranslator('ProgramFlow/BasicLoop')
+
+    @weight(47.5/2)
+    @number(6)
+    def test_fibonacci_series(self):
+        self.assertCorrectTranslator('ProgramFlow/FibonacciSeries')
