@@ -4,41 +4,49 @@ import subprocess
 from gradescope_utils.autograder_utils.decorators import weight, number
 
 class TestBase(unittest.TestCase): 
-    def runStudentCode(self, dirname, name):
+    def runStudentCode(self, dirname):
         res = subprocess.call(['./run_student_code.sh', dirname])
         if res != 0:
-            raise AssertionError(f'Unable to run student\'s Jack Analyzer on {name}.jack!')
+            raise AssertionError(f'Unable to run student\'s Jack Compiler on {dirname}!')
 
-    def asserDiffMatch(self, dirname, name):
-        res = subprocess.call(['diff', f'/autograder/grader/tests/expected-outputs/{dirname}/{name}.xml', f'/autograder/source/{dirname}/{name}.xml', '--strip-trailing-cr'])
+    def assertValidVM(self, dirname, name):
+        res = subprocess.call(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'])
         if res != 0:
-            diff = subprocess.check_output(['/bin/sh', '-c', f'diff /autograder/grader/tests/expected-outputs/{dirname}/{name}.xml /autograder/source/{dirname}/{name}.xml --strip-trailing-cr ; exit 0'], text=True)
-            print(f'Files differ!\n{diff}')
-            raise AssertionError(f'Student\'s XML did not match the provided XML file!')
+            raise AssertionError(f'Invalid VM file!')
 
-    def assertCorrectTranslator(self, testpath):
-        dirname, name = testpath.split('/')
-        self.runStudentCode(dirname, name)
-        self.asserDiffMatch(dirname, name)
-        subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.xml', '/autograder/outputs/'])
+    def assertCorrectCompiler(self, dirname):
+        name = 'Main'
+        self.runStudentCode(dirname)
+        self.assertValidVM(dirname, name)
+        subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.vm', '/autograder/outputs/'])
 
 class TestModules(TestBase): 
-    @weight(47.5/3)
+    @weight(95/6)
     @number(1)
-    def test_square_main(self):
-        self.assertCorrectTranslator('Square/Main')
+    def test_average(self):
+        self.assertCorrectCompiler('Average')
 
-    @weight(47.5/3)
+    @weight(95/6)
     @number(2)
-    def test_square_square(self):
-        self.assertCorrectTranslator('Square/Square')
+    def test_complex_arrays(self):
+        self.assertCorrectCompiler('ComplexArrays')
 
-    @weight(47.5/3)
+    @weight(95/6)
     @number(3)
-    def test_square_square_game(self):
-        self.assertCorrectTranslator('Square/SquareGame')
+    def test_convert_to_bin(self):
+        self.assertCorrectCompiler('ConvertToBin')
 
-    @weight(47.5)
+    @weight(95/6)
     @number(4)
-    def test_array_test_main(self):
-        self.assertCorrectTranslator('ArrayTest/Main')
+    def test_pong(self):
+        self.assertCorrectCompiler('Pong')
+
+    @weight(95/6)
+    @number(5)
+    def test_seven(self):
+        self.assertCorrectCompiler('Seven')
+
+    @weight(95/6)
+    @number(6)
+    def test_square(self):
+        self.assertCorrectCompiler('Square')
