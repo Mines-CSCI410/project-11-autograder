@@ -15,6 +15,7 @@ cp /autograder/grader/tests/${1}/* ./${1}
 # run student-submitted code (untrusted)
 runuser -u student -- ${EXECUTABLE} ${1}
 
-cp /autograder/grader/tests/expected-outputs/${1}/Main.tst ./${1}
+cp /autograder/grader/tests/expected-outputs/${1}/Main.tst ${1}
+cp /nand2tetris/tools/OS/*.vm ./${1}
 
 popd >/dev/null
