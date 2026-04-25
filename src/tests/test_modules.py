@@ -21,32 +21,32 @@ class TestBase(unittest.TestCase):
         subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.vm', '/autograder/outputs/'])
 
 class TestModules(TestBase): 
-    @weight(95/6)
+    @weight(20/6)
     @number(1)
-    def test_average(self):
+    def test_average_valid_vm(self):
         self.assertCorrectCompiler('Average')
 
-    @weight(95/6)
+    @weight(20/6)
     @number(2)
-    def test_complex_arrays(self):
+    def test_complex_arrays_valid_vm(self):
         self.assertCorrectCompiler('ComplexArrays')
 
-    @weight(95/6)
+    @weight(20/6)
     @number(3)
-    def test_convert_to_bin(self):
+    def test_convert_to_bin_valid_vm(self):
         self.assertCorrectCompiler('ConvertToBin')
 
-    @weight(95/6)
+    @weight(20/6)
     @number(4)
-    def test_pong(self):
+    def test_pong_valid_vm(self):
         self.assertCorrectCompiler('Pong')
 
-    @weight(95/6)
+    @weight(20/6)
     @number(5)
-    def test_seven(self):
+    def test_seven_valid_vm(self):
         self.assertCorrectCompiler('Seven')
 
-    @weight(95/6)
+    @weight(20/6)
     @number(6)
-    def test_square(self):
+    def test_square_valid_vm(self):
         self.assertCorrectCompiler('Square')
