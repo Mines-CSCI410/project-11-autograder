@@ -18,6 +18,9 @@ runuser -u student -- ./setup.sh
 # in case setup.sh created jack or xml files
 rm -f *.jack *.xml
 
+# move any JackAnalyzer program to JackCompiler
+mv -n JackAnalyzer ${EXECUTABLE} 2>/dev/null
+
 dos2unix ./*
 chmod ugo+x "${EXECUTABLE}"
 
