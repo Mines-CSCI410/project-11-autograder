@@ -23,7 +23,7 @@ mv -n JackAnalyzer ${EXECUTABLE} 2>/dev/null
 
 # convert any files with windows line endings to unix line endings
 # this is important because ^M after a shebang will break a bash script
-dos2unix ./* 1>/dev/null
+dos2unix ./* 2>/dev/null
 
 chmod ugo+x "${EXECUTABLE}"
 
