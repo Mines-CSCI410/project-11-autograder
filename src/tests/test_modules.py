@@ -6,17 +6,22 @@ from gradescope_utils.autograder_utils.decorators import weight, number
 class TestBase(unittest.TestCase): 
     def runStudentCode(self, dirname):
         try:
-            subprocess.run(['./run_student_code.sh', dirname], check=True, text=True, capture_output=True)
+            process = subprocess.run(['./run_student_code.sh', dirname], check=True, text=True, capture_output=True, timeout=30)
+            print(f'{process.stdout.strip()}\n{process.stderr.strip()}'.strip())
         except subprocess.CalledProcessError as err:
             error_message = str(err.stderr).strip()
-            raise AssertionError(f'Unable to run student code on {dirname}: "{error_message}"\n{err.output}'.strip())
+            raise AssertionError(f'Unable to run student code on {dirname}: "{error_message}"\n{err.stdout}'.strip())
+        except subprocess.TimeoutExpired as err:
+            raise TimeoutError(f'Student code timed out after {err.timeout} seconds:\n{str(err.stdout).strip()}')
 
     def assertValidVM(self, dirname, name):
         try:
-            subprocess.run(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], check=True, text=True, capture_output=True)
+            subprocess.run(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], check=True, text=True, capture_output=True, timeout=30)
         except subprocess.CalledProcessError as err:
             error_message = str(err.stderr).strip()
-            raise AssertionError(f'Student\'s VM did not pass the provided TST file: "{error_message}"\n{err.output}'.strip())
+            raise AssertionError(f'Student\'s VM did not pass the provided TST file: "{error_message}"\n{err.stdout}'.strip())
+        except subprocess.TimeoutExpired as err:
+            raise TimeoutError(f'Emulator timed out out after {err.timeout} seconds:\n{str(err.stdout).strip()}')
 
     def assertCorrectCompiler(self, dirname):
         name = 'Main'
