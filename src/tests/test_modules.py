@@ -10,9 +10,10 @@ class TestBase(unittest.TestCase):
             raise AssertionError(f'Unable to run student\'s Jack Compiler on {dirname}!')
 
     def assertValidVM(self, dirname, name):
-        res = subprocess.call(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'])
-        if res != 0:
-            raise AssertionError(f'Invalid VM file!')
+        try:
+            subprocess.check_output(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], text=True)
+        except subprocess.CalledProcessError as err:
+            raise AssertionError(f'Student\'s VM did not pass the provided TST file:\n{err.stderr}')
 
     def assertCorrectCompiler(self, dirname):
         name = 'Main'
