@@ -5,15 +5,16 @@ from gradescope_utils.autograder_utils.decorators import weight, number
 
 class TestBase(unittest.TestCase): 
     def runStudentCode(self, dirname):
-        res = subprocess.call(['./run_student_code.sh', dirname])
-        if res != 0:
-            raise AssertionError(f'Unable to run student\'s Jack Compiler on {dirname}!')
+        try:
+            subprocess.run(['./run_student_code.sh', dirname], check=True, text=True, capture_output=True)
+        except subprocess.CalledProcessError as err:
+            raise AssertionError(f'Unable to run student code on {dirname}: "{err.stderr}"\n{err.output}')
 
     def assertValidVM(self, dirname, name):
         try:
-            subprocess.check_output(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], text=True)
+            subprocess.run(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as err:
-            raise AssertionError(f'Student\'s VM did not pass the provided TST file:\n{err.stderr}')
+            raise AssertionError(f'Student\'s VM did not pass the provided TST file: "{err.stderr}"\n{err.output}')
 
     def assertCorrectCompiler(self, dirname):
         name = 'Main'
