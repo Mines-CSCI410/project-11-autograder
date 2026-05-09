@@ -18,7 +18,7 @@ class TestBase(unittest.TestCase):
         name = 'Main'
         self.runStudentCode(dirname)
         self.assertValidVM(dirname, name)
-        subprocess.run(['mv', f'/autograder/source/{dirname}/{name}.vm', '/autograder/outputs/'])
+        subprocess.run(['cp', '-R', f'/autograder/source/{dirname}', '/autograder/outputs/'])
 
 class TestModules(TestBase): 
     @weight(20/6)
