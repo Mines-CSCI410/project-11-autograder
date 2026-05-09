@@ -8,13 +8,15 @@ class TestBase(unittest.TestCase):
         try:
             subprocess.run(['./run_student_code.sh', dirname], check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as err:
-            raise AssertionError(f'Unable to run student code on {dirname}: "{err.stderr}"\n{err.output}')
+            error_message = str(err.stderr).strip()
+            raise AssertionError(f'Unable to run student code on {dirname}: "{error_message}"\n{err.output}'.strip())
 
     def assertValidVM(self, dirname, name):
         try:
             subprocess.run(['n2tVMEmulator', f'/autograder/source/{dirname}/{name}.tst'], check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as err:
-            raise AssertionError(f'Student\'s VM did not pass the provided TST file: "{err.stderr}"\n{err.output}')
+            error_message = str(err.stderr).strip()
+            raise AssertionError(f'Student\'s VM did not pass the provided TST file: "{error_message}"\n{err.output}'.strip())
 
     def assertCorrectCompiler(self, dirname):
         name = 'Main'
